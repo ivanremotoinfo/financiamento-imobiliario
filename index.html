@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financiamento Imobiliário | SuporteADV</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d0d0d; color: #e0e0e0; padding: 24px 16px; }
+  .container { max-width: 820px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+  h1 { font-size: 1.5rem; color: #008080; margin-bottom: 6px; }
+  .subtitle { font-size: 0.88rem; color: #888; line-height: 1.5; }
+  .brand { font-size: 0.78rem; margin-top: 8px; color: #555; }
+  .brand span.s { color: #8B00FF; font-weight: 700; }
+  .brand span.a { color: #008080; font-weight: 700; }
+
+  .card { background: #111; border-radius: 10px; border: 1px solid #222; border-left: 3px solid #8B00FF; padding: 20px 22px; margin-bottom: 14px; transition: border-left-color 0.2s; }
+  .card:hover { border-left-color: #008080; }
+  .card-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #008080; font-weight: 700; margin-bottom: 16px; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } }
+  .field.full { grid-column: 1 / -1; }
+
+  .field label { display: block; font-size: 0.78rem; color: #888; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .field input, .field select {
+    width: 100%; padding: 9px 11px; border: 1.5px solid #333; border-radius: 6px;
+    font-size: 0.95rem; color: #fff; background: #1a1a1a; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: #008080; box-shadow: 0 0 0 2px rgba(0,128,128,0.2); }
+  .field select option { background: #1a1a1a; }
+
+  /* Tabs sistema */
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab {
+    flex: 1; padding: 9px; border-radius: 8px; border: 1.5px solid #333;
+    font-size: 0.8rem; font-weight: 700; cursor: pointer; color: #888;
+    background: #1a1a1a; text-transform: uppercase; letter-spacing: 0.05em;
+    transition: all 0.18s; text-align: center; min-width: 80px;
+  }
+  .tab:hover { border-color: #008080; color: #008080; }
+  .tab.ativo { background: #008080; border-color: #008080; color: #fff; }
+
+  /* Slider entrada */
+  .slider-wrap { margin-bottom: 8px; }
+  .slider-wrap input[type=range] { width: 100%; accent-color: #008080; }
+  .slider-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: #555; margin-top: 2px; }
+
+  button.calcular {
+    background: #008080; color: #fff; border: none; padding: 10px 26px;
+    border-radius: 6px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.07em;
+    cursor: pointer; transition: background 0.18s, box-shadow 0.18s; text-transform: uppercase;
+  }
+  button.calcular:hover { background: #006666; box-shadow: 0 0 10px rgba(0,128,128,0.4); }
+
+  /* Resultado */
+  .resultado { margin-top: 14px; display: none; }
+  .resultado.visible { display: block; }
+  .resultado-titulo { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #008080; font-weight: 700; margin-bottom: 14px; }
+
+  /* Resumo */
+  .resumo-top { background: #0a1a0a; border: 1px solid #1a4a1a; border-radius: 10px; padding: 20px; margin-bottom: 14px; }
+  .resumo-top .principal { text-align: center; margin-bottom: 16px; }
+  .resumo-top .principal label { display: block; font-size: 0.72rem; color: #555; text-transform: uppercase; margin-bottom: 4px; }
+  .resumo-top .principal .v { font-size: 1.6rem; font-weight: 700; color: #00ff00; font-family: 'Courier New', monospace; }
+  .resumo-top .principal .sub { font-size: 0.78rem; color: #444; margin-top: 4px; }
+
+  .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 520px) { .res-grid { grid-template-columns: 1fr 1fr; } }
+  .res-item label { display: block; font-size: 0.68rem; color: #444; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+  .res-item .v { font-size: 0.95rem; font-weight: 700; font-family: 'Courier New', monospace; color: #ccc; }
+  .res-item .v.teal { color: #008080; }
+  .res-item .v.roxo { color: #8B00FF; }
+  .res-item .v.amarelo { color: #ffaa00; }
+
+  .divider { border: none; border-top: 1px solid #1a3a1a; margin: 14px 0; }
+
+  /* Barra entrada vs financiado */
+  .barra-composicao { margin: 14px 0; }
+  .barra-composicao label { display: block; font-size: 0.72rem; color: #555; text-transform: uppercase; margin-bottom: 6px; }
+  .barra-bg { background: #1a1a1a; border-radius: 6px; height: 18px; overflow: hidden; display: flex; }
+  .barra-entrada { background: #8B00FF; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; transition: width 0.5s; }
+  .barra-financiado { background: #008080; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; transition: width 0.5s; }
+
+  /* Tabela */
+  .tabela-section { background: #111; border-radius: 10px; border: 1px solid #222; padding: 16px; margin-top: 14px; }
+  .tabela-section details summary { cursor: pointer; color: #008080; font-size: 0.82rem; margin-bottom: 10px; }
+  .tabela-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 560px; }
+  th { text-align: right; color: #555; padding: 6px 8px; border-bottom: 1px solid #222; font-size: 0.68rem; text-transform: uppercase; }
+  th:first-child, th:nth-child(2) { text-align: center; }
+  td { text-align: right; color: #999; padding: 5px 8px; border-bottom: 1px solid #1a1a1a; font-family: 'Courier New', monospace; font-size: 0.78rem; }
+  td:first-child, td:nth-child(2) { text-align: center; font-family: inherit; }
+  td:first-child { color: #555; }
+  td:nth-child(2) { color: #666; font-size: 0.75rem; }
+  tr:hover td { background: #151515; }
+  td.parc { color: #00ff00; font-weight: 700; }
+  tr.total-row td { color: #fff; font-weight: 700; background: #0d1a0d; border-top: 1px solid #333; }
+  tr.aniversario td { background: #0d0d1a; }
+
+  .info-box { background: #0d1a1a; border: 1px solid #1a3a3a; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 0.82rem; color: #666; line-height: 1.6; }
+  .info-box b { color: #008080; }
+
+  .erro { background: #1a0a0a; border: 1px solid #4a1a1a; border-radius: 8px; padding: 14px 16px; color: #ff6666; font-size: 0.88rem; margin-top: 14px; display: none; }
+  .erro.visible { display: block; }
+  .aviso { font-size: 0.72rem; color: #444; margin-top: 12px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Financiamento Imobiliário</h1>
+    <p class="subtitle">Simule financiamentos pelos sistemas Price, SAC e SACRE. Inclui seguros, custos e tabela completa de parcelas.</p>
+    <p class="brand"><span class="s">suporte</span><span class="a">ADV</span>.br — Ferramentas para Advogados</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Sistema de Amortização</div>
+    <div class="tabs">
+      <div class="tab ativo" id="tab-sac" onclick="setTab('sac')">SAC</div>
+      <div class="tab" id="tab-price" onclick="setTab('price')">Price</div>
+      <div class="tab" id="tab-sacre" onclick="setTab('sacre')">SACRE</div>
+    </div>
+
+    <div class="info-box" id="info-sistema">
+      <b>SAC:</b> Amortização Constante. Parcelas decrescentes, maior no início, menor no fim. Menos juros no total. Padrão Caixa Econômica Federal.
+    </div>
+
+    <div class="card-label">Dados do Imóvel</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Valor do imóvel (R$)</label>
+        <input type="number" id="valorImovel" placeholder="Ex: 300000" step="0.01" min="0" oninput="atualizarEntrada()">
+      </div>
+      <div class="field">
+        <label>Entrada (R$)</label>
+        <input type="number" id="entrada" placeholder="Ex: 60000" step="0.01" min="0" oninput="atualizarSlider()">
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:14px">
+      <label>Percentual de entrada: <span id="pct-entrada-label" style="color:#008080;font-weight:700">—</span></label>
+      <div class="slider-wrap">
+        <input type="range" id="slider-entrada" min="0" max="90" step="1" value="20" oninput="atualizarEntradaSlider()">
+        <div class="slider-labels"><span>0%</span><span>20%</span><span>40%</span><span>60%</span><span>80%</span><span>90%</span></div>
+      </div>
+    </div>
+
+    <div class="card-label">Condições do Financiamento</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Taxa de juros (% ao ano)</label>
+        <input type="number" id="taxaAnual" placeholder="Ex: 10,5" step="0.01" min="0" value="10.5">
+      </div>
+      <div class="field">
+        <label>Prazo (meses)</label>
+        <input type="number" id="prazo" placeholder="Ex: 360" min="12" max="420" value="360">
+      </div>
+      <div class="field">
+        <label>Seguro mensal (R$) — opcional</label>
+        <input type="number" id="seguro" placeholder="Ex: 50" step="0.01" min="0" value="0">
+      </div>
+      <div class="field">
+        <label>Taxa adm. mensal (R$) — opcional</label>
+        <input type="number" id="taxaAdm" placeholder="Ex: 25" step="0.01" min="0" value="25">
+      </div>
+      <div class="field">
+        <label>Data da 1ª parcela</label>
+        <input type="month" id="dataPrimeira">
+      </div>
+      <div class="field">
+        <label>Correção do saldo (SACRE)</label>
+        <select id="correcao">
+          <option value="0">Sem correção</option>
+          <option value="433">IPCA (estimado 4% a.a.)</option>
+          <option value="tr">TR (estimado 0,5% a.a.)</option>
+        </select>
+      </div>
+    </div>
+    <button class="calcular" onclick="calcular()">SIMULAR</button>
+  </div>
+
+  <div class="erro" id="erro"></div>
+
+  <div class="resultado" id="resultado">
+    <div class="resultado-titulo" id="res-titulo">Simulação</div>
+
+    <div class="resumo-top">
+      <div class="principal">
+        <label id="label-parcela">1ª Parcela (com encargos)</label>
+        <div class="v" id="res-parcela-principal">—</div>
+        <div class="sub" id="res-parcela-sub">—</div>
+      </div>
+
+      <div class="barra-composicao">
+        <label>Composição do valor do imóvel</label>
+        <div class="barra-bg">
+          <div class="barra-entrada" id="barra-entrada-fill">—</div>
+          <div class="barra-financiado" id="barra-financiado-fill">—</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:#555;margin-top:4px">
+          <span>🟣 Entrada</span><span>🟢 Financiado</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="res-grid">
+        <div class="res-item"><label>Valor do imóvel</label><div class="v" id="res-imovel">—</div></div>
+        <div class="res-item"><label>Entrada</label><div class="v roxo" id="res-entrada">—</div></div>
+        <div class="res-item"><label>Valor financiado</label><div class="v teal" id="res-financiado">—</div></div>
+        <div class="res-item"><label>Total pago</label><div class="v" id="res-total-pago">—</div></div>
+        <div class="res-item"><label>Total de juros</label><div class="v amarelo" id="res-total-juros">—</div></div>
+        <div class="res-item"><label>Custo efetivo total</label><div class="v" id="res-cet">—</div></div>
+        <div class="res-item"><label>Prazo</label><div class="v" id="res-prazo">—</div></div>
+        <div class="res-item"><label>Taxa mensal</label><div class="v" id="res-taxa-mes">—</div></div>
+        <div class="res-item"><label>Sistema</label><div class="v" id="res-sistema">—</div></div>
+      </div>
+    </div>
+
+    <div class="tabela-section">
+      <details>
+        <summary>Ver tabela completa de parcelas</summary>
+        <div class="tabela-scroll">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Competência</th>
+              <th>Parcela total</th><th>Juros</th>
+              <th>Amortização</th><th>Seguro+Adm</th>
+              <th>Saldo devedor</th>
+            </tr></thead>
+            <tbody id="tabela-body"></tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+
+    <p class="aviso">⚠️ Simulação ilustrativa. Valores reais podem variar conforme banco, perfil do cliente, seguros obrigatórios (MIP e DFI) e correção do saldo devedor. Consulte sempre a instituição financeira para uma proposta oficial.</p>
+  </div>
+
+</div>
+
+<script>
+let sistemaAtual = 'sac';
+
+const infoSistemas = {
+  sac: '<b>SAC:</b> Amortização Constante. Parcelas decrescentes, maior no início, menor no fim. Menos juros no total. Padrão Caixa Econômica Federal.',
+  price: '<b>Price:</b> Parcelas fixas do início ao fim. Juros altos no início, amortização cresce com o tempo. Mais fácil de planejar.',
+  sacre: '<b>SACRE:</b> SAC com Redução. Híbrido entre SAC e Price, com correção do saldo pelo IPCA ou TR. Usado pela Caixa no SFH.',
+};
+
+function setTab(s) {
+  sistemaAtual = s;
+  ['sac','price','sacre'].forEach(t => {
+    document.getElementById(`tab-${t}`).className = 'tab' + (t === s ? ' ativo' : '');
+  });
+  document.getElementById('info-sistema').innerHTML = infoSistemas[s];
+  document.getElementById('correcao').parentElement.parentElement.style.opacity = s === 'sacre' ? '1' : '0.4';
+}
+
+function fmtMoeda(v) {
+  return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtMes(str, n) {
+  const [ano, mes] = str.split('-').map(Number);
+  const d = new Date(ano, mes - 1 + n, 1);
+  const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return `${nomes[d.getMonth()]}/${d.getFullYear()}`;
+}
+
+function atualizarEntrada() {
+  const imovel = parseFloat(document.getElementById('valorImovel').value) || 0;
+  const slider = parseInt(document.getElementById('slider-entrada').value);
+  const entrada = imovel * slider / 100;
+  document.getElementById('entrada').value = entrada.toFixed(2);
+  document.getElementById('pct-entrada-label').textContent = slider + '%';
+}
+
+function atualizarSlider() {
+  const imovel = parseFloat(document.getElementById('valorImovel').value) || 0;
+  const entrada = parseFloat(document.getElementById('entrada').value) || 0;
+  if (imovel > 0) {
+    const pct = Math.min(90, Math.round(entrada / imovel * 100));
+    document.getElementById('slider-entrada').value = pct;
+    document.getElementById('pct-entrada-label').textContent = pct + '%';
+  }
+}
+
+function atualizarEntradaSlider() {
+  const imovel = parseFloat(document.getElementById('valorImovel').value) || 0;
+  const slider = parseInt(document.getElementById('slider-entrada').value);
+  document.getElementById('entrada').value = (imovel * slider / 100).toFixed(2);
+  document.getElementById('pct-entrada-label').textContent = slider + '%';
+}
+
+function showErro(msg) {
+  document.getElementById('erro').textContent = msg;
+  document.getElementById('erro').classList.add('visible');
+  document.getElementById('resultado').classList.remove('visible');
+}
+function hideErro() { document.getElementById('erro').classList.remove('visible'); }
+
+function taxaAnualParaMensal(taxaAa) {
+  return Math.pow(1 + taxaAa / 100, 1 / 12) - 1;
+}
+
+function calcular() {
+  hideErro();
+  const valorImovel = parseFloat(document.getElementById('valorImovel').value);
+  const entrada = parseFloat(document.getElementById('entrada').value) || 0;
+  const taxaAa = parseFloat(document.getElementById('taxaAnual').value);
+  const n = parseInt(document.getElementById('prazo').value);
+  const seguro = parseFloat(document.getElementById('seguro').value) || 0;
+  const taxaAdm = parseFloat(document.getElementById('taxaAdm').value) || 0;
+  const dataPrimeira = document.getElementById('dataPrimeira').value;
+
+  if (!valorImovel || valorImovel <= 0) return showErro('Informe o valor do imóvel.');
+  if (entrada >= valorImovel) return showErro('A entrada não pode ser maior ou igual ao valor do imóvel.');
+  if (!taxaAa || taxaAa <= 0) return showErro('Informe a taxa de juros anual.');
+  if (!n || n < 12) return showErro('Prazo mínimo de 12 meses.');
+  if (!dataPrimeira) return showErro('Informe a data da 1ª parcela.');
+
+  const pv = valorImovel - entrada;
+  const i = taxaAnualParaMensal(taxaAa);
+  const encargos = seguro + taxaAdm;
+
+  // Correção SACRE (estimativa)
+  let correcaoMensal = 0;
+  if (sistemaAtual === 'sacre') {
+    const correcao = document.getElementById('correcao').value;
+    if (correcao === '433') correcaoMensal = Math.pow(1.04, 1/12) - 1;
+    else if (correcao === 'tr') correcaoMensal = Math.pow(1.005, 1/12) - 1;
+  }
+
+  const linhas = [];
+  let saldo = pv;
+  let totalPago = 0;
+  let totalJuros = 0;
+
+  for (let k = 1; k <= n; k++) {
+    // Aplica correção no saldo (SACRE)
+    if (correcaoMensal > 0) saldo *= (1 + correcaoMensal);
+
+    const juros = saldo * i;
+    let amort, pmt;
+
+    if (sistemaAtual === 'price') {
+      pmt = pv * (i * Math.pow(1+i, n)) / (Math.pow(1+i, n) - 1);
+      amort = pmt - juros;
+    } else {
+      // SAC e SACRE
+      amort = pv / n;
+      pmt = amort + juros;
+    }
+
+    saldo -= amort;
+    const pmtTotal = pmt + encargos;
+    totalPago += pmtTotal;
+    totalJuros += juros;
+
+    linhas.push({ k, juros, amort, pmt, pmtTotal, saldo: Math.max(0, saldo) });
+  }
+
+  const pctEntrada = (entrada / valorImovel * 100).toFixed(1);
+  const pctFinanciado = (pv / valorImovel * 100).toFixed(1);
+  const nomes = { sac: 'SAC', price: 'Price', sacre: 'SACRE' };
+
+  // Preenche resultado
+  document.getElementById('res-titulo').textContent = `Simulação — Sistema ${nomes[sistemaAtual]}`;
+
+  const primParcela = linhas[0].pmtTotal;
+  const ultParcela = linhas[n-1].pmtTotal;
+  document.getElementById('res-parcela-principal').textContent = fmtMoeda(primParcela);
+  document.getElementById('label-parcela').textContent = sistemaAtual === 'price' ? 'Parcela fixa (com encargos)' : '1ª Parcela (com encargos)';
+  document.getElementById('res-parcela-sub').textContent = sistemaAtual !== 'price' ? `Última parcela: ${fmtMoeda(ultParcela)}` : `${n} parcelas iguais de ${fmtMoeda(primParcela)}`;
+
+  document.getElementById('barra-entrada-fill').style.width = pctEntrada + '%';
+  document.getElementById('barra-entrada-fill').textContent = pctEntrada + '%';
+  document.getElementById('barra-financiado-fill').style.width = pctFinanciado + '%';
+  document.getElementById('barra-financiado-fill').textContent = pctFinanciado + '%';
+
+  document.getElementById('res-imovel').textContent = fmtMoeda(valorImovel);
+  document.getElementById('res-entrada').textContent = fmtMoeda(entrada);
+  document.getElementById('res-financiado').textContent = fmtMoeda(pv);
+  document.getElementById('res-total-pago').textContent = fmtMoeda(totalPago);
+  document.getElementById('res-total-juros').textContent = fmtMoeda(totalJuros);
+  document.getElementById('res-cet').textContent = fmtMoeda(totalPago + entrada);
+  document.getElementById('res-prazo').textContent = `${n} meses (${(n/12).toFixed(0)} anos)`;
+  document.getElementById('res-taxa-mes').textContent = (i * 100).toFixed(4).replace('.', ',') + '% a.m.';
+  document.getElementById('res-sistema').textContent = nomes[sistemaAtual];
+
+  // Tabela
+  const tbody = document.getElementById('tabela-body');
+  tbody.innerHTML = '';
+  linhas.forEach(l => {
+    const isAniv = l.k % 12 === 0;
+    const tr = document.createElement('tr');
+    if (isAniv) tr.className = 'aniversario';
+    tr.innerHTML = `
+      <td>${l.k}</td>
+      <td>${fmtMes(dataPrimeira, l.k - 1)}</td>
+      <td class="parc">${fmtMoeda(l.pmtTotal)}</td>
+      <td style="color:#ffaa00">${fmtMoeda(l.juros)}</td>
+      <td style="color:#888">${fmtMoeda(l.amort)}</td>
+      <td style="color:#555">${fmtMoeda(encargos)}</td>
+      <td>${fmtMoeda(l.saldo)}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Total
+  const trT = document.createElement('tr');
+  trT.className = 'total-row';
+  trT.innerHTML = `
+    <td colspan="2">TOTAL</td>
+    <td>${fmtMoeda(totalPago)}</td>
+    <td style="color:#ffaa00">${fmtMoeda(totalJuros)}</td>
+    <td>${fmtMoeda(pv)}</td>
+    <td>${fmtMoeda(encargos * n)}</td>
+    <td>—</td>`;
+  tbody.appendChild(trT);
+
+  document.getElementById('resultado').classList.add('visible');
+}
+
+// Init
+const hoje = new Date();
+const prox = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1);
+document.getElementById('dataPrimeira').value = `${prox.getFullYear()}-${String(prox.getMonth()+1).padStart(2,'0')}`;
+document.getElementById('valorImovel').value = 300000;
+document.getElementById('entrada').value = 60000;
+document.getElementById('pct-entrada-label').textContent = '20%';
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const f = document.activeElement;
+    if (f && (f.tagName === 'INPUT' || f.tagName === 'SELECT')) calcular();
+  }
+});
+</script>
+</body>
+</html>
